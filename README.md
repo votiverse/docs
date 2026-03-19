@@ -9,6 +9,7 @@ Documentation, case studies, articles, and papers for [Votiverse](https://github
 Real-world scenarios demonstrating Votiverse in action, with screenshots from the live application.
 
 - **[Maple Heights Condo Board](case-studies/maple-heights-condo-board/)** — How a 24-unit condominium uses Votiverse to make transparent, accountable decisions about their shared building. Covers group creation, admission control, proposals, community notes, voting, and results.
+- **[Neighborhood Budget Council](case-studies/neighborhood-budget-council/)** — How 18 residents use delegation to make better budget decisions without requiring everyone to be an expert on everything. Covers delegation, topic scoping, chains, override rule, weight, surveys, and governance configuration.
 
 ## Guides
 
