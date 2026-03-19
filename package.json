@@ -1,0 +1,15 @@
+{
+  "name": "@votiverse/docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Documentation, case studies, and screenshot tooling for Votiverse",
+  "scripts": {
+    "screenshots:maple-heights": "tsx case-studies/maple-heights-condo-board/take-screenshots.ts"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

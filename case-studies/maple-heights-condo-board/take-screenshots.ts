@@ -6,8 +6,8 @@
  * Requires: running servers (VCP :3000, backend :4000, web :5173)
  * Requires: condo board data already seeded in the database
  *
- * Usage: npx playwright test docs/case-study/take-screenshots.ts
- *   or:  npx tsx docs/case-study/take-screenshots.ts
+ * Usage: npm run screenshots:maple-heights
+ *   or:  npx tsx case-studies/maple-heights-condo-board/take-screenshots.ts
  */
 
 import { chromium, type Page, type Browser } from "playwright";
