@@ -4,7 +4,7 @@
  * Uses Playwright to navigate through the scenario and capture polished screenshots.
  * Requires: npx playwright (available globally)
  * Requires: running servers (VCP :3000, backend :4000, web :5173)
- * Requires: condo board data already seeded in the database
+ * Requires: data seeded (pnpm reset in both VCP and backend)
  *
  * Usage: npm run screenshots:maple-heights
  *   or:  npx tsx case-studies/maple-heights-condo-board/take-screenshots.ts
@@ -12,13 +12,17 @@
 
 import { chromium, type Page, type Browser } from "playwright";
 import { join } from "path";
+import { loadManifest } from "../../lib/seed-manifest.js";
 
 const BASE = "http://localhost:5173";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
-const ASM_ID = "8127e8e0-1e48-4422-bd80-9df2f3e6eb53";
-const LOBBY_EVENT_ID = "e20f6971-debd-4e97-b68a-cfef7c3d053c";
-const LOBBY_ISSUE_ID = "3e1eb125-31fc-4c67-9790-fc0ff4f4035e";
+
+const manifest = loadManifest();
+const ASM_ID = manifest.assembly("maple");
+const LOBBY_EVENT_ID = manifest.event("maple-lobby");
+const LOBBY_ISSUE_ID = manifest.issue("maple-lobby", 0);
+const ROOF_EVENT_ID = manifest.event("maple-roof");
 
 async function login(page: Page, email: string): Promise<string> {
   // Clear existing session
@@ -39,13 +43,18 @@ async function login(page: Page, email: string): Promise<string> {
 
 async function screenshot(page: Page, name: string, waitMs = 1000): Promise<void> {
   await page.waitForTimeout(waitMs);
+  // Hide dev clock widget for clean screenshots
+  await page.evaluate(() => {
+    const els = document.querySelectorAll('[class*="fixed bottom"]');
+    els.forEach((el) => ((el as HTMLElement).style.display = "none"));
+  }).catch(() => {});
   const path = join(IMG_DIR, `${name}.png`);
   await page.screenshot({ path, fullPage: false });
   console.log(`  📸 ${name}.png`);
 }
 
 async function main() {
-  console.log("🎬 Starting case study screenshot capture...\n");
+  console.log("🎬 Maple Heights Condo Board — Screenshot Capture\n");
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -222,7 +231,7 @@ async function main() {
   });
 
   // Go to the roof repair event (which already has results)
-  await page.goto(`${BASE}/assembly/${ASM_ID}/events/bf38f100-6471-4a4d-8800-df329090b9c1`);
+  await page.goto(`${BASE}/assembly/${ASM_ID}/events/${ROOF_EVENT_ID}`);
   await page.waitForTimeout(2000);
   await screenshot(page, "19-results-revealed");
 

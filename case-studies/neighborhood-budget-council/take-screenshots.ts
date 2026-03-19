@@ -12,16 +12,17 @@
 
 import { chromium, type Page } from "playwright";
 import { join } from "path";
+import { loadManifest } from "../../lib/seed-manifest.js";
 
 const BASE = "http://localhost:5173";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
 
-const MUN_ID = "1838c496-5637-4c65-9c8d-5fa7575d3bf5";
-
+const manifest = loadManifest();
+const MUN_ID = manifest.assembly("municipal");
 const EVENTS = {
-  budgetCycle: "06ef8dcd-6299-47c1-9a22-9ad4e26eed50",
-  emergencyInfra: "1b16ba29-f1ca-4bb7-b3c2-e1f53ee81b2f",
+  budgetCycle: manifest.event("municipal-budget"),
+  emergencyInfra: manifest.event("municipal-emergency"),
 };
 
 async function login(page: Page, email: string): Promise<void> {
