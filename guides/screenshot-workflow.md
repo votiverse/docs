@@ -35,10 +35,16 @@ Each case study has its own TypeScript script in `docs/case-study/`.
 ```typescript
 import { chromium, type Page } from "playwright";
 import { join } from "path";
+import { loadManifest } from "../../lib/seed-manifest.js";
 
 const BASE = "http://localhost:5173";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
+
+// Load entity IDs from the seed manifest — never hardcode UUIDs
+const manifest = loadManifest();
+const ASM_ID = manifest.assembly("maple");
+const EVENT_ID = manifest.event("maple-lobby");
 
 async function login(page: Page, email: string): Promise<void> {
   await page.evaluate(() => localStorage.clear());
@@ -51,6 +57,11 @@ async function login(page: Page, email: string): Promise<void> {
 
 async function screenshot(page: Page, name: string, waitMs = 1000): Promise<void> {
   await page.waitForTimeout(waitMs);
+  // Hide dev clock widget for clean screenshots
+  await page.evaluate(() => {
+    const els = document.querySelectorAll('[class*="fixed bottom"]');
+    els.forEach((el) => ((el as HTMLElement).style.display = "none"));
+  }).catch(() => {});
   await page.screenshot({ path: join(IMG_DIR, `${name}.png`), fullPage: false });
   console.log(`  📸 ${name}.png`);
 }
@@ -65,8 +76,8 @@ async function main() {
 
   // Your scenario here...
   await login(page, "elena-vasquez@example.com");
-  await page.goto(`${BASE}/assemblies`);
-  await screenshot(page, "01-my-groups");
+  await page.goto(`${BASE}/assembly/${ASM_ID}`);
+  await screenshot(page, "01-group-dashboard");
 
   await browser.close();
 }
@@ -166,23 +177,53 @@ const inviteCode = await page.evaluate(() => {
 | **Directory** | `docs/case-study/images/` per case study |
 | **Headless** | Always `true` — no OS chrome, no cursor |
 
+## Seed Manifest — Resolving Entity IDs
+
+The VCP seed generates UUIDs dynamically. Screenshot scripts must **never hardcode UUIDs** — they change on every `pnpm reset`. Instead, use the **seed manifest**.
+
+After seeding, the VCP writes `platform/vcp/seed-manifest.json` with all key→UUID mappings. The shared reader at `lib/seed-manifest.ts` provides typed lookups:
+
+```typescript
+import { loadManifest } from "../../lib/seed-manifest.js";
+
+const m = loadManifest();
+
+m.assembly("maple")                  // → assembly UUID
+m.event("maple-lobby")               // → event UUID
+m.issue("maple-lobby", 0)            // → first issue UUID in that event
+m.participant("maple", "Elena Vasquez") // → participant UUID
+m.topic("municipal", "roads")         // → topic UUID
+```
+
+The reader auto-discovers the manifest by looking for a sibling `votiverse/` repo. Override with the `SEED_MANIFEST_PATH` environment variable if your layout differs.
+
+**If the manifest is missing**, the reader throws a clear error telling you to run `pnpm reset`.
+
 ## Scenario Data
 
-Each case study may require specific data in the database. Options:
+Each case study uses data from the standard VCP seed. To add a new scenario:
 
-1. **Use seeded data** — the VCP and backend seed scripts create 5 assemblies with participants. Good for existing-feature screenshots.
+1. **Define your assembly, events, and content** in `platform/vcp/scripts/seed-data/` (organizations, participants, events, votes, content).
+2. **Run `pnpm reset`** in both VCP and backend — the manifest regenerates automatically.
+3. **Reference entities by key** in your screenshot script using `loadManifest()`.
 
-2. **Create via API** — the script uses `fetch()` to create assemblies, events, proposals through the backend API. Good for custom scenarios.
+Currently seeded assemblies and their keys:
 
-3. **Existing scenario data** — if you've run the condo board roleplay, that data persists in the dev databases. The script can capture it directly.
-
-After a `pnpm reset`, scenario data is lost. Document the setup steps in your script's comments.
+| Key          | Assembly                 | Case Study |
+|--------------|--------------------------|------------|
+| `greenfield` | Greenfield Community Council | — |
+| `osc`        | OSC Governance Board     | — |
+| `municipal`  | Municipal Budget Committee | Neighborhood Budget Council |
+| `youth`      | Youth Advisory Panel     | — |
+| `board`      | Board of Directors       | — |
+| `maple`      | Maple Heights Condo Board | Maple Heights Condo Board |
 
 ## Workflow Summary
 
 1. **Plan the narrative** — decide what story you're telling and what screenshots illustrate it
-2. **Number the shots** — `01-`, `02-`, etc. for the order they appear in the document
-3. **Write the script** — Playwright TypeScript, following the template above
-4. **Run and verify** — check each screenshot looks right
-5. **Write the markdown** — narrative text with `![alt](images/NN-name.png)` references
-6. **Move to docs repo** — images + markdown go to `votiverse/docs` (separate repo)
+2. **Add seed data** — define the assembly, participants, events, and content in the VCP seed
+3. **Reset** — `pnpm reset` in VCP and backend; manifest regenerates
+4. **Write the script** — Playwright TypeScript using `loadManifest()` for IDs, following the template above
+5. **Add npm script** — `"screenshots:<name>": "tsx case-studies/<name>/take-screenshots.ts"` in `package.json`
+6. **Run and verify** — `npm run screenshots:<name>` with all three servers running
+7. **Write the markdown** — narrative text with `![alt](images/NN-name.png)` references
