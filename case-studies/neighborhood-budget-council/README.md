@@ -59,7 +59,7 @@ This creates a **delegation chain**: Omar → Kwame → Marcus.
 
 ![Omar's delegation showing the chain through Kwame to Marcus](images/07-omar-chain-delegation.png)
 
-When Marcus votes, his vote carries the weight of the entire chain — his own plus Kwame's plus Omar's. The chain has a maximum depth of 3 (set by the committee's governance rules), preventing infinite chains that could concentrate too much power.
+When Marcus votes, his vote carries the weight of the entire chain — his own plus Kwame's plus Omar's. The awareness layer shows Marcus exactly whose trust he carries, and the system flags concentration whenever one person's delegated weight grows disproportionately large.
 
 ### Marcus: Voting with Weight
 
@@ -117,7 +117,7 @@ The committee's governance rules are set at creation and cannot be changed after
 ![Governance settings showing configuration and timeline](images/15-governance-settings.png)
 
 Key settings for this community:
-- **Delegation**: transitive (chains allowed), depth limit of 3, topic-scoped
+- **Delegation**: transitive (chains allowed), topic-scoped
 - **Timeline**: deliberation days, then voting days
 - **Ballot**: secret, results sealed until voting ends
 - **Surveys**: enabled for community observations
@@ -125,7 +125,7 @@ Key settings for this community:
 
 ![Features configuration including surveys and predictions](images/16-features-config.png)
 
-These rules aren't arbitrary — each one addresses a specific governance need. Chain depth limits prevent power concentration. Secret ballots prevent coercion. Sealed results prevent bandwagon effects. Surveys ground decisions in evidence.
+These rules aren't arbitrary — each one addresses a specific governance need. Concentration alerts flag when delegation power grows disproportionate. Secret ballots prevent coercion. Sealed results prevent bandwagon effects. Surveys ground decisions in evidence.
 
 ---
 
@@ -136,7 +136,7 @@ These rules aren't arbitrary — each one addresses a specific governance need. 
 | **Delegation** | Trust someone to vote on your behalf | Busy residents don't lose their voice |
 | **Topic scoping** | Different delegates for different subjects | Expertise flows to where it's needed |
 | **Delegation chains** | Trust flows through multiple people | Flexible representation without formal elections |
-| **Chain depth limit** | Maximum hops before a vote reaches the voter | Prevents invisible power concentration |
+| **Concentration alerts** | Flags when one person carries disproportionate weight | Prevents invisible power concentration |
 | **Override rule** | Direct vote overrides delegation | No one permanently surrenders their voice |
 | **Weight visibility** | See how many votes each person carries | Transparency in representation |
 | **Secret ballot** | Votes hidden until voting closes | Free participation without coercion |
