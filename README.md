@@ -14,6 +14,7 @@ Real-world scenarios demonstrating Votiverse in action, with screenshots from th
 
 Practical guides for working with Votiverse.
 
+- **[Content Guidelines](guides/content-guidelines.md)** — How to write documentation, case studies, and articles for this site. Voice, tone, structure, and quality checklist.
 - **[Screenshot Workflow](guides/screenshot-workflow.md)** — How to create reproducible, high-quality screenshots from the Votiverse UI using Playwright.
 
 ## Papers
