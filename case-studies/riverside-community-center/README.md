@@ -12,7 +12,7 @@ Their topic taxonomy is simple — two levels deep, easy to scan:
 - **Facilities** — Maintenance, Improvements
 - **Budget** — Fees, Grants
 
-This structure matters more than it might seem. When a vote is classified under "Budget / Fees," different people carry voting weight than when the same question is classified under "Programs / Youth." Topic classification isn't just an organizational convenience — it's a governance decision.
+This structure matters more than it might seem. When a vote is classified under "BUDGET › FEES," different people carry voting weight than when the same question is classified under "PROGRAMS › YOUTH." Topic classification isn't just an organizational convenience — it's a governance decision.
 
 ## Priya's Delegation: Trust by Domain
 
@@ -31,25 +31,25 @@ This is the core idea behind topic-scoped delegation: you don't have to be an ex
 
 In the spring review vote, each issue shows its topic as a badge before the title. At a glance, Priya can see which of her delegates is handling what:
 
-![Spring results showing three issues with topic badges: Facilities / Maintenance, Budget / Fees, and Programs / Youth](images/03-spring-results-top.png)
+![Spring results showing three issues with topic eyebrows: FACILITIES › MAINTENANCE, BUDGET › FEES, and PROGRAMS › YOUTH](images/03-spring-results-top.png)
 
-- **Facilities / Maintenance** — Pool Resurfacing: Marco voted for Priya (she sees her vote was delegated).
-- **Budget / Fees** — Membership Fee Adjustment: Sam voted for Priya.
-- **Programs / Youth** — Youth Basketball League: Priya voted directly.
+- **FACILITIES › MAINTENANCE** — Pool Resurfacing: Marco voted for Priya (she sees her vote was delegated).
+- **BUDGET › FEES** — Membership Fee Adjustment: Sam voted for Priya.
+- **PROGRAMS › YOUTH** — Youth Basketball League: Priya voted directly.
 
 The results reflect this. The fee adjustment shows 9 votes total — Sam's single vote carried the weight of four people (himself plus Priya, David, and Kwesi, who all delegate Budget to him). The basketball league shows 11 votes with Leah Chen carrying three (herself plus Janet and Nina, who delegate Programs to her).
 
-![Results showing Budget / Fees with 8 votes for (89%) and Programs / Youth with 11 votes for (100%), with delegation weight visible](images/04-spring-results-bottom.png)
+![Results showing BUDGET › FEES with 8 votes for (89%) and PROGRAMS › YOUTH with 11 votes for (100%), with delegation weight visible](images/04-spring-results-bottom.png)
 
 The numbers aren't just arithmetic. They tell a story about who the community trusts to make which decisions.
 
 ## The Misclassification
 
-In the summer planning vote, Diana Reyes (the center director) creates three issues. One of them — "Summer Camp Registration Fees" — is classified under **Budget / Fees**.
+In the summer planning vote, Diana Reyes (the center director) creates three issues. One of them — "Summer Camp Registration Fees" — is classified under **BUDGET › FEES**.
 
 This seems reasonable. Registration fees are about money, right?
 
-![Summer Planning event showing three issues: HVAC System Replacement (Facilities / Improvements), Summer Camp Registration Fees (Budget / Fees, struck through with Cancelled badge), and Adult Fitness Class Expansion (Programs / Adult)](images/06-cancelled-issue.png)
+![Summer Planning event showing three issues: HVAC System Replacement (FACILITIES › IMPROVEMENTS), Summer Camp Registration Fees (BUDGET › FEES, struck through with Cancelled badge), and Adult Fitness Class Expansion (PROGRAMS › ADULT)](images/06-cancelled-issue.png)
 
 But Leah Chen, the youth programs coordinator, sees a problem. She writes a community note on Sam's fee schedule proposal:
 
@@ -63,9 +63,9 @@ Four members endorse Leah's note. The community agrees: the classification is wr
 
 Diana cancels the misclassified issue. It stays in the record — struck through with a red "Cancelled" badge — as a transparent audit trail. Nothing is deleted.
 
-She creates a new vote: "Summer Camp Registration Structure," classified under **Programs / Youth**.
+She creates a new vote: "Summer Camp Registration Structure," classified under **PROGRAMS › YOUTH**.
 
-![Corrected event showing Summer Camp Registration Structure with Programs / Youth badge, Leah's proposal in the voting booklet](images/07-corrected-camp-issue.png)
+![Corrected event showing Summer Camp Registration Structure with PROGRAMS › YOUTH badge, Leah's proposal in the voting booklet](images/07-corrected-camp-issue.png)
 
 Now Leah's proposal — which focuses on inclusive design, scholarship tiers, and age-appropriate groupings — sits in the voting booklet. And Leah carries the delegated weight of the two members who trust her on youth programs.
 
@@ -91,7 +91,7 @@ A more specific delegation always overrides a more general one.
 | Feature | Governance principle |
 |---------|---------------------|
 | Single topic per issue | Every vote has one clear classification — no ambiguity about which delegations activate |
-| "Parent / Child" badges | Voters immediately see which domain a vote belongs to |
+| Topic eyebrow with › chevron | Voters immediately see which domain a vote belongs to |
 | Topic-scoped delegation | Expertise flows where it's needed without surrendering your voice everywhere |
 | Issue-scoped delegation | Specific trust for a single question, without long-term commitment |
 | Community notes | Collective oversight of the governance process itself, not just the issues |
