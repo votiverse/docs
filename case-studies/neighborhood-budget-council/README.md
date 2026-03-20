@@ -29,9 +29,9 @@ When Carmen logs into her dashboard, she sees the community's governance at a gl
 
 ![Carmen's municipal dashboard showing delegation and voting stats](images/02-municipal-dashboard.png)
 
-On the delegations page, Carmen can see who trusts her with their vote:
+From the avatar menu in the top right, Carmen can open **Delegators** to see who trusts her with their vote:
 
-![Carmen's delegation view showing incoming delegations](images/03-carmen-delegations-received.png)
+![Carmen's delegators page showing who delegates to her](images/03-carmen-delegations-received.png)
 
 Carmen doesn't just vote for herself — when she votes on an infrastructure issue, her vote carries the weight of everyone who delegated to her. This is the core of liquid democracy: **expertise flows to where it's needed**, without requiring a formal election for every committee.
 

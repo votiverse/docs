@@ -76,8 +76,8 @@ async function main() {
   await page.goto(`${BASE}/assembly/${MUN_ID}`);
   await shot(page, "02-municipal-dashboard");
 
-  // 03. Carmen's delegations — she receives delegations from others
-  await page.goto(`${BASE}/assembly/${MUN_ID}/delegations`);
+  // 03. Carmen's delegators — who trusts her with their vote (profile page)
+  await page.goto(`${BASE}/profile/delegators`);
   await shot(page, "03-carmen-delegations-received");
 
   // ── ACT 2: Nkechi's Topic-Scoped Delegation ──────────────────
