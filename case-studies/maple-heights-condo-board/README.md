@@ -22,7 +22,7 @@ She navigates to **My Groups** and clicks **New Group**.
 
 ![My Groups page with the New Group button](images/03-my-groups.png)
 
-The group creation form asks for a name and lets her choose governance rules. The default — **Modern Democracy** — provides a good balance: delegation through declared candidates, structured deliberation periods, secret ballots, community notes for fact-checking, and surveys for collecting member observations.
+The group creation form asks for a name and lets her choose governance rules. The default — **Liquid Delegation** — provides a good balance: delegation through declared candidates, structured deliberation periods, secret ballots, community notes for fact-checking, and surveys for collecting member observations.
 
 Crucially, she also selects the **admission mode**. The default is **Approval required**, which means anyone who receives an invite link must be approved by an admin before they can vote. This protects against Sybil attacks — a bad actor creating fake accounts to manipulate votes.
 
