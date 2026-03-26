@@ -10,11 +10,11 @@
  *   or:  npx tsx case-studies/maple-heights-condo-board/take-screenshots.ts
  */
 
-import { chromium, type Page, type Browser } from "playwright";
+import { chromium, type Page, type BrowserContext } from "playwright";
 import { join } from "path";
 import { loadManifest } from "../../lib/seed-manifest.js";
 
-const BASE = "http://localhost:5173";
+const BASE = process.env.WEB_URL || "http://localhost:5174";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
 
@@ -24,18 +24,17 @@ const LOBBY_EVENT_ID = manifest.event("maple-lobby");
 const LOBBY_ISSUE_ID = manifest.issue("maple-lobby", 0);
 const ROOF_EVENT_ID = manifest.event("maple-roof");
 
+let ctx: BrowserContext;
+
 async function login(page: Page, email: string): Promise<string> {
-  // Clear existing session
-  await page.evaluate(() => {
-    localStorage.clear();
-  });
-  await page.goto(BASE);
-  await page.waitForSelector('input[type="email"], input[placeholder*="Email"], input');
-  // Fill login form
-  const emailInput = page.locator('input').first();
-  await emailInput.fill(email);
-  const passwordInput = page.locator('input[type="password"]');
-  await passwordInput.fill("password");
+  // Clear cookies (auth is cookie-based on web) and localStorage
+  await ctx.clearCookies();
+  await page.goto(`${BASE}/login`);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForSelector('input#email', { timeout: 15000 });
+  await page.locator('input#email').fill(email);
+  await page.locator('input#password').fill("password1234");
   await page.locator('button:has-text("Sign in")').click();
   await page.waitForTimeout(2000);
   return email;
@@ -57,18 +56,18 @@ async function main() {
   console.log("🎬 Maple Heights Condo Board — Screenshot Capture\n");
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
+  ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 2, // Retina quality
   });
-  const page = await context.newPage();
+  const page = await ctx.newPage();
 
   // ── ACT 1: Group Creation ──────────────────────────────────────
 
   console.log("Act 1: Group Creation");
 
   // 1. Login page
-  await page.goto(BASE);
+  await page.goto(`${BASE}/login`);
   await page.waitForTimeout(1000);
   await screenshot(page, "01-login-page");
 
@@ -136,7 +135,7 @@ async function main() {
   const loginRes = await fetch(`${API}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "elena-vasquez@example.com", password: "password" }),
+    body: JSON.stringify({ email: "elena-vasquez@example.com", password: "password1234" }),
   });
   const { accessToken } = await loginRes.json() as { accessToken: string };
   await fetch(`${API}/dev/notifications/seed`, {
@@ -144,21 +143,15 @@ async function main() {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
   });
 
-  // Go to dashboard and capture the bell
+  // Go to dashboard — sidebar shows Notifications link
   await page.goto(BASE);
   await page.waitForTimeout(2000);
-  await screenshot(page, "09-notification-bell");
+  await screenshot(page, "09-dashboard-with-sidebar");
 
-  // Click the bell to open dropdown
-  await page.locator('button[aria-label*="Notification"]').click();
-  await page.waitForTimeout(500);
-  await screenshot(page, "10-notification-dropdown");
-
-  // Close dropdown and go to full page
-  await page.keyboard.press("Escape");
+  // Navigate to notifications page
   await page.goto(`${BASE}/notifications`);
   await page.waitForTimeout(1500);
-  await screenshot(page, "11-notifications-page");
+  await screenshot(page, "10-notifications-page");
 
   // ── ACT 4: Proposals & Community Notes ────────────────────────
 

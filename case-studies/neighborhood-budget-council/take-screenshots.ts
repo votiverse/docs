@@ -10,11 +10,11 @@
  *   or:  npx tsx case-studies/neighborhood-budget-council/take-screenshots.ts
  */
 
-import { chromium, type Page } from "playwright";
+import { chromium, type Page, type BrowserContext } from "playwright";
 import { join } from "path";
 import { loadManifest } from "../../lib/seed-manifest.js";
 
-const BASE = "http://localhost:5173";
+const BASE = process.env.WEB_URL || "http://localhost:5174";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
 
@@ -25,17 +25,16 @@ const EVENTS = {
   emergencyInfra: manifest.event("municipal-emergency"),
 };
 
+let ctx: BrowserContext;
+
 async function login(page: Page, email: string): Promise<void> {
-  // Navigate first, then clear storage on the page
-  await page.goto(BASE);
-  await page.waitForTimeout(500);
-  await page.evaluate(() => {
-    localStorage.clear();
-  });
-  await page.goto(BASE);
-  await page.waitForSelector("input");
-  await page.locator("input").first().fill(email);
-  await page.locator('input[type="password"]').fill("password");
+  await ctx.clearCookies();
+  await page.goto(`${BASE}/login`);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForSelector('input#email', { timeout: 15000 });
+  await page.locator('input#email').fill(email);
+  await page.locator('input#password').fill("password1234");
   await page.locator('button:has-text("Sign in")').click();
   await page.waitForTimeout(2000);
 }
@@ -55,11 +54,11 @@ async function main() {
   console.log("🎬 Neighborhood Budget Council — Screenshot Capture\n");
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
+  ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 2,
   });
-  const page = await context.newPage();
+  const page = await ctx.newPage();
 
   // ── ACT 1: Carmen's View — The Active Delegate ────────────────
 

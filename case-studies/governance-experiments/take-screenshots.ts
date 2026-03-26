@@ -16,11 +16,11 @@
  *   or:  npx tsx case-studies/governance-experiments/take-screenshots.ts
  */
 
-import { chromium, type Page } from "playwright";
+import { chromium, type Page, type BrowserContext } from "playwright";
 import { join } from "path";
 import { loadManifest } from "../../lib/seed-manifest.js";
 
-const BASE = "http://localhost:5173";
+const BASE = process.env.WEB_URL || "http://localhost:5174";
 const API = "http://localhost:4000";
 const IMG_DIR = join(import.meta.dirname ?? ".", "images");
 
@@ -33,15 +33,16 @@ const BOARD_ID = manifest.assembly("board");
 const MAPLE_ID = manifest.assembly("maple");
 const MUNICIPAL_ID = manifest.assembly("municipal");
 
+let ctx: BrowserContext;
+
 async function login(page: Page, email: string): Promise<void> {
-  await page.goto(BASE);
+  await ctx.clearCookies();
+  await page.goto(`${BASE}/login`);
   await page.evaluate(() => localStorage.clear());
-  await page.goto(BASE);
-  await page.waitForSelector('input[type="email"], input');
-  const emailInput = page.locator("input").first();
-  await emailInput.fill(email);
-  const passwordInput = page.locator('input[type="password"]');
-  await passwordInput.fill("password");
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForSelector('input#email', { timeout: 15000 });
+  await page.locator('input#email').fill(email);
+  await page.locator('input#password').fill("password1234");
   await page.locator('button:has-text("Sign in")').click();
   await page.waitForTimeout(2000);
 }
@@ -64,11 +65,11 @@ async function main() {
   console.log("🎬 Governance Experiments — Screenshot Capture\n");
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
+  ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 2,
   });
-  const page = await context.newPage();
+  const page = await ctx.newPage();
 
   // ── Act 1: The Researcher's Dashboard ────────────────────────────────
   // Marcus Chen is in OSC (Liquid Open), Municipal (Civic), and Maple Heights (Liquid Delegation)
@@ -78,7 +79,7 @@ async function main() {
   await screenshot(page, "01-researcher-dashboard");
 
   // Navigate to My Groups to see the different governance labels
-  await page.locator('a:has-text("My Groups")').first().click();
+  await page.goto(`${BASE}/assemblies`);
   await page.waitForTimeout(1500);
   await screenshot(page, "02-my-groups-multiple-presets");
 
@@ -87,18 +88,17 @@ async function main() {
   console.log("\nAct 2: Direct Democracy — everyone votes directly\n");
 
   await login(page, "elena-vasquez@example.com");
-  await page.locator('a:has-text("My Groups")').first().click();
+  await page.goto(`${BASE}/assemblies`);
   await page.waitForTimeout(1500);
   await screenshot(page, "03-elena-groups-direct-vs-liquid");
 
-  // Go into Greenfield
-  await page.locator("text=Greenfield Community Council").click();
+  // Go into Greenfield — Votes tab (default)
+  await page.goto(`${BASE}/assembly/${GREENFIELD_ID}/events`);
   await page.waitForTimeout(1500);
   await screenshot(page, "04-greenfield-votes-direct-democracy");
 
-  // Check the navbar — should have Votes only (no Delegates, no Topics, no Candidates)
-  // Click on the Group link to see the settings
-  await page.locator('a:has-text("Greenfield Community Council")').first().click();
+  // Group settings/about page
+  await page.goto(`${BASE}/assembly/${GREENFIELD_ID}/about`);
   await page.waitForTimeout(1500);
   await screenshot(page, "05-greenfield-group-settings");
 
@@ -116,12 +116,12 @@ async function main() {
   await screenshot(page, "07-osc-votes-liquid-open");
 
   // Check delegates page — should exist (delegation enabled via transferable=true)
-  await page.locator('a:has-text("Delegates")').first().click();
+  await page.goto(`${BASE}/assembly/${OSC_ID}/delegations`);
   await page.waitForTimeout(1500);
   await screenshot(page, "08-osc-delegates-no-candidates");
 
   // Go to group settings to show config
-  await page.goto(`${BASE}/assembly/${OSC_ID}`);
+  await page.goto(`${BASE}/assembly/${OSC_ID}/about`);
   await page.waitForTimeout(1500);
   await page.evaluate(() => window.scrollBy(0, 300));
   await screenshot(page, "09-osc-config-liquid-open");
@@ -136,17 +136,17 @@ async function main() {
   await screenshot(page, "10-board-votes-representative");
 
   // Check delegates — should show candidates
-  await page.locator('a:has-text("Delegates")').first().click();
+  await page.goto(`${BASE}/assembly/${BOARD_ID}/delegations`);
   await page.waitForTimeout(1500);
   await screenshot(page, "11-board-delegates-candidates-only");
 
   // Check candidates page
-  await page.locator('a:has-text("Candidates")').first().click();
+  await page.goto(`${BASE}/assembly/${BOARD_ID}/candidacies`);
   await page.waitForTimeout(1500);
   await screenshot(page, "12-board-candidates-representative");
 
   // Group config
-  await page.goto(`${BASE}/assembly/${BOARD_ID}`);
+  await page.goto(`${BASE}/assembly/${BOARD_ID}/about`);
   await page.waitForTimeout(1500);
   await page.evaluate(() => window.scrollBy(0, 300));
   await screenshot(page, "13-board-config-representative");
@@ -162,22 +162,22 @@ async function main() {
 
   // Show full navbar: Votes, Surveys, Delegates, Topics, Notes, Candidates
   // Navigate to delegates to show the difference from Board
-  await page.locator('a:has-text("Delegates")').first().click();
+  await page.goto(`${BASE}/assembly/${MAPLE_ID}/delegations`);
   await page.waitForTimeout(1500);
   await screenshot(page, "15-maple-delegates-with-candidates");
 
   // Topics page — topic-scoped delegation
-  await page.locator('a:has-text("Topics")').first().click();
+  await page.goto(`${BASE}/assembly/${MAPLE_ID}/topics`);
   await page.waitForTimeout(1500);
   await screenshot(page, "16-maple-topics-scoped-delegation");
 
   // Community notes
-  await page.locator('a:has-text("Notes")').first().click();
+  await page.goto(`${BASE}/assembly/${MAPLE_ID}/notes`);
   await page.waitForTimeout(1500);
   await screenshot(page, "17-maple-notes-community-verification");
 
   // Group config
-  await page.goto(`${BASE}/assembly/${MAPLE_ID}`);
+  await page.goto(`${BASE}/assembly/${MAPLE_ID}/about`);
   await page.waitForTimeout(1500);
   await page.evaluate(() => window.scrollBy(0, 300));
   await screenshot(page, "18-maple-config-liquid-delegation");
