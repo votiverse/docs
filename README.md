@@ -18,11 +18,11 @@ Real-world scenarios demonstrating Votiverse in action. Each case study includes
 
 ## Papers
 
-The governance model papers live in the [main repo](https://github.com/votiverse/votiverse/tree/main/docs/papers):
+- **Papers I & II — Governance model & self-sustaining governance.** Published on arXiv: <https://arxiv.org/abs/2604.20863>
+- **Paper III — "The Composition Thesis".** In development.
+- **"Toward Controlled Experiments in Comparative Governance" (ICEDEG 2026).** In the IEEE conference proceedings.
 
-- **Paper I: Whitepaper** — Governance model, formal properties, design rationale.
-- **Paper II: Self-Sustaining Governance** — Proposals, candidacies, community notes.
-- **Paper III: Democracy in Every Pocket** — Planned.
+See [`docs/papers/`](https://github.com/votiverse/votiverse/tree/main/docs/papers) in the main repo for canonical pointers.
 
 ---
 
