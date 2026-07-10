@@ -1,1 +1,4 @@
 node_modules/
+
+# Rendered demo reel artifacts (build output — regenerate with `npm run demo`)
+demo-video/output/

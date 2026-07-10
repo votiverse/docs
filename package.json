@@ -8,7 +8,9 @@
     "screenshots:maple-heights": "tsx case-studies/maple-heights-condo-board/take-screenshots.ts",
     "screenshots:neighborhood": "tsx case-studies/neighborhood-budget-council/take-screenshots.ts",
     "screenshots:riverside": "tsx case-studies/riverside-community-center/take-screenshots.ts",
-    "screenshots:governance-experiments": "tsx case-studies/governance-experiments/take-screenshots.ts"
+    "screenshots:governance-experiments": "tsx case-studies/governance-experiments/take-screenshots.ts",
+    "demo": "demo-video/make.sh",
+    "demo:check": "demo-video/make.sh --check"
   },
   "devDependencies": {
     "playwright": "^1.58.2",
