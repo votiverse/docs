@@ -60,7 +60,7 @@ async function main() {
     throw err;
   } finally {
     await resetClock();
-    if (!SMOKE) writeCaptions(OUT_DIR); // .srt + transcript (skipped on smoke — timings collapsed)
+    if (!SMOKE) writeCaptions(OUT_DIR, STORYBOARD); // <storyboard>.srt + .script.md (skipped on smoke)
     await ctx.close(); // finalizes the video
     await browser.close();
   }

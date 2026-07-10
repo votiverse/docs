@@ -19,6 +19,8 @@
 #                                   recording; fails if a route/selector no longer resolves
 #
 # Env overrides: WEB_URL, API_URL, VCP_URL, SEED_MANIFEST_PATH
+#   STORYBOARD     — which demo-video/storyboards/<name>.ts to run (default votiverse-demo);
+#                    also names the outputs (<name>.mp4, <name>-subtitled.mp4, <name>.srt).
 #   VIDEO_SAVE_DIR — if set, the finished masters + captions are also copied there
 #                    (e.g. a gitignored videos/ folder). Build intermediates stay in output/.
 set -euo pipefail
@@ -31,6 +33,7 @@ mkdir -p "$OUT"
 WEB_URL="${WEB_URL:-http://localhost:5173}"
 API_URL="${API_URL:-http://localhost:4000}"
 VCP_URL="${VCP_URL:-http://localhost:3000}"
+NAME="${STORYBOARD:-votiverse-demo}"   # output basename — one per storyboard
 
 WANT_CLEAN=1; WANT_SUB=1; CHECK_ONLY=0; SMOKE_ONLY=0
 case "${1:-}" in
@@ -107,20 +110,20 @@ render() { # <label> <SUBTITLES value: "" or "1"> <dst.mp4>
   convert "$after" "$3"
 }
 
-if [[ "$WANT_CLEAN" == 1 ]]; then render "clean master (caption cards)" ""  "$OUT/votiverse-demo.mp4"; fi
-if [[ "$WANT_SUB"   == 1 ]]; then render "subtitled (baked narration)" "1" "$OUT/votiverse-demo-subtitled.mp4"; fi
+if [[ "$WANT_CLEAN" == 1 ]]; then render "clean master (caption cards)" ""  "$OUT/$NAME.mp4"; fi
+if [[ "$WANT_SUB"   == 1 ]]; then render "subtitled (baked narration)" "1" "$OUT/$NAME-subtitled.mp4"; fi
 
 echo ""
-echo "✓ Done — in $OUT :"
-if [[ "$WANT_CLEAN" == 1 ]]; then echo "  • votiverse-demo.mp4            clean master (caption cards)"; fi
-if [[ "$WANT_SUB"   == 1 ]]; then echo "  • votiverse-demo-subtitled.mp4  narration burned in"; fi
-echo "  • votiverse-demo.srt            frame-exact subtitle cues (generated)"
-echo "  • votiverse-demo.script.md      timed narration transcript (generated)"
+echo "✓ Done ($NAME) — in $OUT :"
+if [[ "$WANT_CLEAN" == 1 ]]; then echo "  • $NAME.mp4            clean master (caption cards)"; fi
+if [[ "$WANT_SUB"   == 1 ]]; then echo "  • $NAME-subtitled.mp4  narration burned in"; fi
+echo "  • $NAME.srt            frame-exact subtitle cues (generated)"
+echo "  • $NAME.script.md      timed narration transcript (generated)"
 
 # Optionally publish the finished masters + captions to a save dir (build intermediates stay in output/).
 if [[ -n "${VIDEO_SAVE_DIR:-}" ]]; then
   mkdir -p "$VIDEO_SAVE_DIR"
-  for f in votiverse-demo.mp4 votiverse-demo-subtitled.mp4 votiverse-demo.srt votiverse-demo.script.md; do
+  for f in "$NAME.mp4" "$NAME-subtitled.mp4" "$NAME.srt" "$NAME.script.md"; do
     if [[ -f "$OUT/$f" ]]; then cp "$OUT/$f" "$VIDEO_SAVE_DIR/"; fi
   done
   echo "  ↳ published to $VIDEO_SAVE_DIR"
