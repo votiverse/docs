@@ -48,7 +48,8 @@ export async function createRecordingContext(
 ): Promise<BrowserContext> {
   const ctx = await browser.newContext({
     viewport: size,
-    recordVideo: { dir: outDir, size },
+    // SMOKE mode runs the storyboard as a fast drift check — no video recording.
+    ...(process.env["SMOKE"] ? {} : { recordVideo: { dir: outDir, size } }),
   });
   await ctx.addInitScript(CURSOR_INIT_JS);
   await ctx.addInitScript(HIDE_DEVCLOCK_JS);
@@ -57,7 +58,8 @@ export async function createRecordingContext(
 
 /** Simple wait wrapper — reads better than raw waitForTimeout in the storyboard. */
 export function dwell(page: Page, ms: number): Promise<void> {
-  return page.waitForTimeout(ms);
+  // SMOKE mode collapses the "let it breathe" pauses so a full drift run takes ~1min.
+  return page.waitForTimeout(process.env["SMOKE"] ? Math.min(ms, 40) : ms);
 }
 
 // ── Beat timing (for building an aligned narration script) ─────────────────────

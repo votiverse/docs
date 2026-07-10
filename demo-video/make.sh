@@ -15,6 +15,8 @@
 #   demo-video/make.sh --clean      only the clean master
 #   demo-video/make.sh --subtitled  only the subtitled variant
 #   demo-video/make.sh --check      preflight only (verify the stack; render nothing)
+#   demo-video/make.sh --smoke      fast drift check — run the storyboard headless, no
+#                                   recording; fails if a route/selector no longer resolves
 #
 # Env overrides: WEB_URL, API_URL, VCP_URL, SEED_MANIFEST_PATH
 set -euo pipefail
@@ -28,13 +30,14 @@ WEB_URL="${WEB_URL:-http://localhost:5173}"
 API_URL="${API_URL:-http://localhost:4000}"
 VCP_URL="${VCP_URL:-http://localhost:3000}"
 
-WANT_CLEAN=1; WANT_SUB=1; CHECK_ONLY=0
+WANT_CLEAN=1; WANT_SUB=1; CHECK_ONLY=0; SMOKE_ONLY=0
 case "${1:-}" in
   --clean)     WANT_SUB=0 ;;
   --subtitled) WANT_CLEAN=0 ;;
   --check)     CHECK_ONLY=1 ;;
+  --smoke)     SMOKE_ONLY=1 ;;
   "")          ;;
-  *) echo "Unknown option: $1  (use --clean | --subtitled | --check)" >&2; exit 2 ;;
+  *) echo "Unknown option: $1  (use --clean | --subtitled | --check | --smoke)" >&2; exit 2 ;;
 esac
 
 fail() { echo "✗ $*" >&2; exit 1; }
@@ -70,6 +73,15 @@ echo "  ✓ manifest $MANIFEST"
 if [[ "$CHECK_ONLY" == 1 ]]; then echo "✓ Preflight OK — the stack is ready to record."; exit 0; fi
 
 export WEB_URL SEED_MANIFEST_PATH="$MANIFEST"
+
+# ── Smoke: run the storyboard headless as a fast drift check (no recording) ─────
+if [[ "$SMOKE_ONLY" == 1 ]]; then
+  echo "▸ Smoke: running the storyboard headless (no recording)…"
+  ( cd "$DOCS" && SMOKE=1 npx tsx demo-video/make-demo.ts ) \
+    || fail "smoke check FAILED — a beat errored (route/selector drift, login, or missing target). See above."
+  echo "✓ Smoke passed — every beat navigated and every required target resolved."
+  exit 0
+fi
 
 # ── Render + convert ───────────────────────────────────────────────────────────
 newest_webm() { ls -t "$OUT"/*.webm 2>/dev/null | head -1 || true; }

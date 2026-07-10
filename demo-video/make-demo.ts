@@ -82,7 +82,9 @@ async function resetClock(): Promise<void> {
 
 async function main() {
   mkdirSync(OUT_DIR, { recursive: true });
-  console.log("🎬 Votiverse demo reel — recording\n");
+  console.log(
+    process.env["SMOKE"] ? "🔎 Votiverse demo — smoke check (headless, no recording)\n" : "🎬 Votiverse demo reel — recording\n",
+  );
 
   const browser = await chromium.launch({ headless: true });
   const ctx = await createRecordingContext(browser, OUT_DIR);
@@ -251,14 +253,19 @@ async function main() {
     throw err;
   } finally {
     await resetClock();
-    writeCaptions(OUT_DIR); // emit .srt + timed transcript from the recorded narration
+    // Skip caption emit on smoke — timings are collapsed, so they'd be meaningless.
+    if (!process.env["SMOKE"]) writeCaptions(OUT_DIR);
     await ctx.close(); // finalizes the video
     await browser.close();
   }
 
-  const path = video ? await video.path() : null;
-  if (path) console.log(`\n🎥 Video written: ${path}`);
-  else console.log(`\n🎥 Video written to: ${OUT_DIR}/`);
+  if (!process.env["SMOKE"]) {
+    const path = video ? await video.path() : null;
+    if (path) console.log(`\n🎥 Video written: ${path}`);
+    else console.log(`\n🎥 Video written to: ${OUT_DIR}/`);
+  } else {
+    console.log("\n✅ Smoke check complete — no drift.");
+  }
 }
 
 main().catch((err) => {
