@@ -19,6 +19,8 @@
 #                                   recording; fails if a route/selector no longer resolves
 #
 # Env overrides: WEB_URL, API_URL, VCP_URL, SEED_MANIFEST_PATH
+#   VIDEO_SAVE_DIR — if set, the finished masters + captions are also copied there
+#                    (e.g. a gitignored videos/ folder). Build intermediates stay in output/.
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -114,3 +116,12 @@ if [[ "$WANT_CLEAN" == 1 ]]; then echo "  • votiverse-demo.mp4            clea
 if [[ "$WANT_SUB"   == 1 ]]; then echo "  • votiverse-demo-subtitled.mp4  narration burned in"; fi
 echo "  • votiverse-demo.srt            frame-exact subtitle cues (generated)"
 echo "  • votiverse-demo.script.md      timed narration transcript (generated)"
+
+# Optionally publish the finished masters + captions to a save dir (build intermediates stay in output/).
+if [[ -n "${VIDEO_SAVE_DIR:-}" ]]; then
+  mkdir -p "$VIDEO_SAVE_DIR"
+  for f in votiverse-demo.mp4 votiverse-demo-subtitled.mp4 votiverse-demo.srt votiverse-demo.script.md; do
+    if [[ -f "$OUT/$f" ]]; then cp "$OUT/$f" "$VIDEO_SAVE_DIR/"; fi
+  done
+  echo "  ↳ published to $VIDEO_SAVE_DIR"
+fi
